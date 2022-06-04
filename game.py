@@ -8,7 +8,7 @@ from pygame.locals import  *
 # initializing
 pygame.init()
 pygame.font.init()
-pygame.display.set_caption("Tasty Blocks")
+pygame.display.set_caption("3eleven")
 clock = pygame.time.Clock()
 fps = 30
 
@@ -16,16 +16,18 @@ fps = 30
 black = (0, 0, 0)
 white = (255, 255, 255)
 purple = [(227, 159, 246), (164, 94, 229), (152, 103, 197), (163, 44, 196), (122, 73, 136), (113, 1, 147)]
+colour = random.choice(purple)
 
 # sizes
-screen_size = (800, 600) # width x height
+screen_size = (850, 500) # width x height
 screen = pygame.display.set_mode(screen_size)
 board_dimension = 9
 
 # other
 font = pygame.font.SysFont('Comic Sans', 60)
-title = font.render('Tasty Blocks', False, purple[0])
-text = font.render('Score', False, purple[0])
+small_font = pygame.font.SysFont('Comic Sans', 20)
+text_title = font.render('3eleven', False, colour)
+text_score = font.render('Score', False, colour)
 
 class queue_object:
     def __init__(self):
@@ -54,11 +56,19 @@ class gamer:
         self.tile = None
 
     def draw_board(self):
-        screen.blit(title, (250, 10))
+        screen.blit(text_title, (150, 10))
+        screen.blit(text_score, (500, 20))
+        screen.blit(font.render(str(self.score), False, colour), (500, 80))
+        # top left corner: 100, 100
+        # each cell: 50 * 50
         for i in range(self.x + 1):
-            pygame.draw.line(screen, purple[0], (i * 50 + 100, 100), (i * 50 + 100, 550), 3)
+            pygame.draw.line(screen, random.choice(purple), (i * 50 + 100, 100), (i * 50 + 100, 100 + (self.x) * 50), 3)
         for i in range(self.y + 1):
-            pygame.draw.line(screen, purple[0], (100, i * 50 + 100), (550, i * 50 + 100), 4)
+            pygame.draw.line(screen, random.choice(purple), (100, i * 50 + 100), (100 + (self.y) * 50, i * 50 + 100), 3)
+        
+        for i in range(1, self.y + 1):
+            for j in range(1, self.x + 1):
+                screen.blit(small_font.render(str(self.board[j][i]), False, purple[0]), (i * 50 + 70, j * 50 + 50))
     
     def spawn(self):
 
@@ -66,10 +76,13 @@ class gamer:
 
         for i in range (1, self.x + 1):
             for j in range (1, self.y + 1):
-                if (self.board[i][j] == 0):
+                if self.board[i][j] == 0:
                     option.append([i, j])
+                if self.board[i][j] == 177147:
+                    self.state = "gameover"
+                    return 1
 
-        if (len(option) == 0):
+        if len(option) == 0:
             self.state = "gameover"
             return 1
         
@@ -78,7 +91,7 @@ class gamer:
         return 0
     
     def up(self):
-        for i in range(1, self.y + 1):
+        for i in range(self.y, 3, -1):
             for j in range(1, self.x + 1):
                 if self.board[i-2][j] == self.board[i][j] and self.board[i-1][j] > 0:
                     self.board[i-2][j] *= 3
@@ -107,8 +120,8 @@ class gamer:
         
 
     def down(self):
-        for i in range(self.y - 2, 0, -1):
-            for j in range(self.x - 2, 0, -1):
+        for i in range(1, self.y - 2):
+            for j in range(1, self.x + 1):
                 if self.board[i+2][j] == self.board[i][j] and self.board[i+1][j] > 0:
                     self.board[i+2][j] *= 3
                     self.score += self.board[i+2][j]
@@ -134,8 +147,8 @@ class gamer:
 
 
     def left(self):
-        for i in range(self.x, 2, -1):
-            for j in range(self.y, 2, -1):
+        for i in range(1, self.y + 1):
+            for j in range(self.x, 3, -1):
                 if self.board[i][j-2] == self.board[i][j] and self.board[i][j-1] > 0:
                     self.board[i][j-2] *= 3
                     self.score += self.board[i][j-2]
@@ -161,8 +174,8 @@ class gamer:
 
                     
     def right(self):
-        for i in range(1, self.y - 1):
-            for j in range(1, self.x - 1):
+        for i in range(1, self.y + 1):
+            for j in range(1, self.x - 2):
                 if self.board[i][j+2] == self.board[i][j] and self.board[i][j+1] > 0:
                     self.board[i][j+2] *= 3
                     self.score += self.board[i][j+2]
@@ -186,23 +199,13 @@ class gamer:
                 if 10 > cury + 1:
                     queue.push([curx, cury+1])
 
-
-    """
-    self.x = random.randint(0, 9)
-    self.y = random.randint(0, 9)
-
-    while (gamer.board[self.x][self.y] > 0):
-    self.x = random.randint(0, 9)
-    self.y = random.randint(0, 9)
-    """
-
-    def a(self):
+    def debug(self):
         for x in self.board:
             print(x)
 
 game = gamer()
 game.spawn()
-game.a()
+game.debug()
 # main code
 done = False
 while not done:
@@ -218,34 +221,32 @@ while not done:
             if event.key == pygame.K_UP:
                 game.up()
                 print()
-                game.a()
+                game.debug()
             if event.key == pygame.K_DOWN:
                 game.down()
                 print()
-                game.a()
+                game.debug()
             if event.key == pygame.K_LEFT:
                 game.left()
                 print()
-                game.a()
+                game.debug()
             if event.key == pygame.K_RIGHT:
                 game.right()
                 print()
-                game.a()
+                game.debug()
             if event.key == pygame.K_ESCAPE:
                 ... 
         
-        if (game.spawn() == 1):
-            game.state = "gameover"
-            break
+            if game.spawn() == 1:
+                game.state = "gameover"
+                break
 
-    text_game_over = font.render("Game Over", True, white)
-    text_game_over1 = font.render("Press ESC", True, white)
-
-    screen.blit(text, [0, 0])
+    text_game_over = font.render("Game Over", True, colour)
+    text_game_over1 = font.render("Press ESC", True, colour)
 
     if game.state == "gameover":
-        screen.blit(text_game_over, [20, 200])
-        screen.blit(text_game_over1, [25, 265])
+        screen.blit(text_game_over, [500, 200])
+        screen.blit(text_game_over1, [500, 265])
 
     game.draw_board()
     pygame.display.update()
