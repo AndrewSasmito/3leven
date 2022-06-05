@@ -135,6 +135,7 @@ class the_game:
         if self.checker() == 0:
             self.state = "gameover"
             return 1
+
         if len(option) != 0:
             spot = random.choice(option)
             self.board[spot[0]][spot[1]] = random.choice([3, 9])
@@ -345,7 +346,6 @@ while not done:
 
             if valid_key == 1:
                 if game.spawn() == 1:
-                    game.state = "gameover"
                     break
     
     game_font = pygame.font.SysFont('comicsansms', 30)
