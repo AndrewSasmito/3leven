@@ -100,7 +100,7 @@ class the_game:
                     return 1
                 # check if up is possible
                 if i >= 3:
-                    if self.board[i-2][j] == self.boad[i][j]:
+                    if self.board[i-2][j] == self.board[i][j]:
                         return 1
                 # check if down is possible
                 if i <= self.x - 2:
