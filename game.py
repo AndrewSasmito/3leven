@@ -9,7 +9,7 @@ from pygame.locals import  *
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
-pygame.display.set_caption("3eleven")
+pygame.display.set_caption("3leven")
 clock = pygame.time.Clock()
 fps = 30
 
